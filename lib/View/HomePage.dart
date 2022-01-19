@@ -37,6 +37,15 @@ class _HomePageState extends State<HomePage> {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
                   case ConnectionState.none:
+                  return Container(
+                    width: 200.0,
+                    height: 200.0,
+                    alignment: Alignment.center,
+                    child: const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 5.0,
+                    ),
+                  );
                   default:
                     if (snapshot.hasError) {
                       return Container(); //Exibir mensagem de erro
@@ -162,37 +171,46 @@ class _HomePageState extends State<HomePage> {
   Widget _createCardList(BuildContext context, AsyncSnapshot snapshot) {
     return ListView.builder(
       padding: EdgeInsets.all(10.0),
-      itemCount: 30,
+      itemCount: snapshot.data['items'].length,
       itemBuilder: (context, index) {
         return Card(
-          child: Row(
-            children: [
-              Padding(padding: EdgeInsets.all(10)),
-              Column(
+          elevation: 10.0,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              height: 110,
+              child: Row(
                 children: [
-                  Text(snapshot.data['items'][index]['name']),
-                  SizedBox(
-                    width: 200,
-                    child: Text(
-                      snapshot.data['items'][index]['description'] ?? '',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Padding(padding: EdgeInsets.all(10)),
+                  Column(
                     children: [
-                      Text(snapshot.data['items'][index]['stargazers_count']
-                          .toString()),
-                      Text(snapshot.data['items'][index]['forks_count']
-                          .toString())
+                      Text(snapshot.data['items'][index]['name']),
+                      SizedBox(
+                        width: 200,
+                        child: Text(
+                          snapshot.data['items'][index]['description'] ?? '',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(snapshot.data['items'][index]['stargazers_count']
+                              .toString()),
+                          Text(snapshot.data['items'][index]['forks_count']
+                              .toString())
+                        ],
+                      )
                     ],
+                  ),
+                  Container(
+                    width: 100,
+                    color: Colors.black,
                   )
                 ],
               ),
-
-              Container(width: 100,height: 100,color: Colors.black,)
-            ],
+            ),
           ),
         );
       },
