@@ -162,6 +162,7 @@ class _HomePageState extends State<HomePage> {
   Widget _createCardList(BuildContext context, AsyncSnapshot snapshot) {
     return ListView.builder(
       padding: EdgeInsets.all(10.0),
+      itemCount: 30,
       itemBuilder: (context, index) {
         return Card(
           child: Row(
@@ -173,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     width: 200,
                     child: Text(
-                      snapshot.data['items'][index]['description'],
+                      snapshot.data['items'][index]['description'] ?? '',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -189,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                   )
                 ],
               ),
-              
+
               Container(width: 100,height: 100,color: Colors.black,)
             ],
           ),
