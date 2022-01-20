@@ -204,9 +204,9 @@ class _HomePageState extends State<HomePage> {
     }
     return ListView.builder(
       padding: EdgeInsets.all(10.0),
-      itemCount: list.length + 1,
+      itemCount: list.length < 29 ? list.length : list.length+1  ,
       itemBuilder: (context, index) {
-        if (index == list.length) {
+        if (index == list.length && index == 30) {
           return TextButton(
             onPressed: _nextPage,
             child: const Text(
