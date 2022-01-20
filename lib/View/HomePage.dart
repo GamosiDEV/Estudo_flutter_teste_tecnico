@@ -1,4 +1,4 @@
-import 'package:estudo_de_teste_tecnico/ViiewModel/Request.dart';
+import 'package:estudo_de_teste_tecnico/ViewModel/Request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -115,6 +115,10 @@ class _HomePageState extends State<HomePage> {
               });
               break;
             case SelectedPopup.repositories:
+              setState(() {
+                _sortOrNot = SortOrNot.repositories;
+              });
+              //_sortOrNot = SortOrNot.notSort;
               break;
             //Ordenar por Repositorios
           }
@@ -154,8 +158,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _stopSearching() {
-    _clearSearchQuery();
-
     setState(() {
       _isSearching = false;
     });
@@ -169,9 +171,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _createCardList(BuildContext context, AsyncSnapshot snapshot) {
+    List list = snapshot.data['items'].toList();
+    switch(_sortOrNot){
+      case SortOrNot.repositories:
+        list.sort((a,b){
+          return a['name'].toLowerCase().compareTo(b['name'].toLowerCase());
+        });
+        list.forEach((element) { print(element['name']);});
+        break;
+      default:
+        break;
+    }
     return ListView.builder(
       padding: EdgeInsets.all(10.0),
-      itemCount: snapshot.data['items'].length,
+      itemCount: list.length,
       itemBuilder: (context, index) {
         return Card(
           elevation: 10.0,
@@ -188,13 +201,13 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          snapshot.data['items'][index]['name'],
+                          list[index]['name'],
                           style: TextStyle(fontWeight: FontWeight.bold),
                           textAlign: TextAlign.start,
                         ),
                         Divider(),
                         Text(
-                          snapshot.data['items'][index]['description'] ?? '',
+                          list[index]['description'] ?? '',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -205,7 +218,7 @@ class _HomePageState extends State<HomePage> {
                             Flexible(child: Icon(Icons.star)),
                             Flexible(
                               flex: 1,
-                              child: Text(snapshot.data['items'][index]
+                              child: Text(list[index]
                                       ['stargazers_count']
                                   .toString(), style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
@@ -213,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                             Flexible(child: Icon(Icons.account_tree)),
                             Flexible(
                               flex: 1,
-                              child: Text(snapshot.data['items'][index]
+                              child: Text(list[index]
                                       ['forks_count']
                                   .toString(), style: TextStyle(fontWeight: FontWeight.bold),),
                             )
@@ -234,7 +247,7 @@ class _HomePageState extends State<HomePage> {
                             child: SizedBox.fromSize(
                               size: Size.fromRadius(32), // Image radius
                               child: Image.network(
-                                snapshot.data['items'][index]['owner']
+                                list[index]['owner']
                                     ['avatar_url'],
                                 fit: BoxFit.cover,
                               ),
@@ -245,7 +258,7 @@ class _HomePageState extends State<HomePage> {
                         Flexible(
                           flex: 1,
                           child: Text(
-                            snapshot.data['items'][index]['owner']['login'],
+                            list[index]['owner']['login'],
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-enum SortOrNot { stars,  notSort }
+enum SortOrNot { repositories , stars,  notSort }
 
 class Request {
 
@@ -17,6 +17,7 @@ class Request {
 
     switch (sortOrNot) {
       case SortOrNot.notSort:
+      case SortOrNot.repositories:
         response = await http.get(
             'https://api.github.com/search/repositories?q=${query}language:Java&page=$offSet');
         break;
