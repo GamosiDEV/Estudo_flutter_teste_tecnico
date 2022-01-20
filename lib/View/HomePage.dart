@@ -37,15 +37,15 @@ class _HomePageState extends State<HomePage> {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
                   case ConnectionState.none:
-                  return Container(
-                    width: 200.0,
-                    height: 200.0,
-                    alignment: Alignment.center,
-                    child: const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 5.0,
-                    ),
-                  );
+                    return Container(
+                      width: 200.0,
+                      height: 200.0,
+                      alignment: Alignment.center,
+                      child: const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        strokeWidth: 5.0,
+                      ),
+                    );
                   default:
                     if (snapshot.hasError) {
                       return Container(); //Exibir mensagem de erro
@@ -176,38 +176,83 @@ class _HomePageState extends State<HomePage> {
         return Card(
           elevation: 10.0,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: 110,
+            padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 140.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Flexible(
-                    flex: 2,
+                    flex: 3,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(snapshot.data['items'][index]['name']),
                         Text(
-                            snapshot.data['items'][index]['description'] ?? '',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          snapshot.data['items'][index]['name'],
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.start,
+                        ),
+                        Divider(),
+                        Text(
+                          snapshot.data['items'][index]['description'] ?? '',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Divider(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(snapshot.data['items'][index]['stargazers_count']
-                                .toString()),
-                            const Padding(padding: EdgeInsets.all(10)),
-                            Text(snapshot.data['items'][index]['forks_count']
-                                .toString())
+                            Flexible(child: Icon(Icons.star)),
+                            Flexible(
+                              flex: 1,
+                              child: Text(snapshot.data['items'][index]
+                                      ['stargazers_count']
+                                  .toString(), style: TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                            Divider(),
+                            Flexible(child: Icon(Icons.account_tree)),
+                            Flexible(
+                              flex: 1,
+                              child: Text(snapshot.data['items'][index]
+                                      ['forks_count']
+                                  .toString(), style: TextStyle(fontWeight: FontWeight.bold),),
+                            )
                           ],
                         )
                       ],
                     ),
                   ),
+                  Spacer(),
                   Flexible(
                     flex: 1,
-                    child: Container(
-                      color: Colors.black,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          child: ClipOval(
+                            child: SizedBox.fromSize(
+                              size: Size.fromRadius(32), // Image radius
+                              child: Image.network(
+                                snapshot.data['items'][index]['owner']
+                                    ['avatar_url'],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Divider(),
+                        Flexible(
+                          flex: 1,
+                          child: Text(
+                            snapshot.data['items'][index]['owner']['login'],
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 ],
