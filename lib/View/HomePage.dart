@@ -16,6 +16,7 @@ class _HomePageState extends State<HomePage> {
 
   SortOrNot _sortOrNot = SortOrNot.notSort;
 
+  int _setPage = 1;
   bool _isSearching = false;
   String _searchQuery = '';
   TextEditingController _searchQueryController = TextEditingController();
@@ -32,7 +33,8 @@ class _HomePageState extends State<HomePage> {
         children: [
           Expanded(
             child: FutureBuilder(
-              future: request.getRepositories(_searchQuery, _sortOrNot),
+              future:
+                  request.getRepositories(_searchQuery, _sortOrNot, _setPage),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
@@ -95,6 +97,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.pop(context);
               return;
             }
+            _clearPage();
             _clearSearchQuery();
           },
         )
@@ -111,11 +114,13 @@ class _HomePageState extends State<HomePage> {
           switch (result) {
             case SelectedPopup.stars:
               setState(() {
+                _clearPage();
                 _sortOrNot = SortOrNot.stars;
               });
               break;
             case SelectedPopup.repositories:
               setState(() {
+                _clearPage();
                 _sortOrNot = SortOrNot.repositories;
               });
               //_sortOrNot = SortOrNot.notSort;
@@ -147,18 +152,21 @@ class _HomePageState extends State<HomePage> {
     );
 
     setState(() {
+      _clearPage();
       _isSearching = true;
     });
   }
 
   void _updateSearchQuery(String query) {
     setState(() {
+      _clearPage();
       _searchQuery = query;
     });
   }
 
   void _stopSearching() {
     setState(() {
+      _clearPage();
       _isSearching = false;
     });
   }
@@ -170,109 +178,138 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _clearPage() {
+    _setPage = 1;
+  }
+
+  void _nextPage() {
+    setState(() {
+      _setPage++;
+    });
+  }
+
   Widget _createCardList(BuildContext context, AsyncSnapshot snapshot) {
     List list = snapshot.data['items'].toList();
-    switch(_sortOrNot){
+    switch (_sortOrNot) {
       case SortOrNot.repositories:
-        list.sort((a,b){
+        list.sort((a, b) {
           return a['name'].toLowerCase().compareTo(b['name'].toLowerCase());
         });
-        list.forEach((element) { print(element['name']);});
+        list.forEach((element) {
+          print(element['name']);
+        });
         break;
       default:
         break;
     }
     return ListView.builder(
       padding: EdgeInsets.all(10.0),
-      itemCount: list.length,
+      itemCount: list.length + 1,
       itemBuilder: (context, index) {
-        return Card(
-          elevation: 10.0,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 140.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(
-                    flex: 3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          list[index]['name'],
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.start,
-                        ),
-                        Divider(),
-                        Text(
-                          list[index]['description'] ?? '',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Divider(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Flexible(child: Icon(Icons.star)),
-                            Flexible(
-                              flex: 1,
-                              child: Text(list[index]
-                                      ['stargazers_count']
-                                  .toString(), style: TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Divider(),
-                            Flexible(child: Icon(Icons.account_tree)),
-                            Flexible(
-                              flex: 1,
-                              child: Text(list[index]
-                                      ['forks_count']
-                                  .toString(), style: TextStyle(fontWeight: FontWeight.bold),),
-                            )
-                          ],
-                        )
-                      ],
+        if (index == list.length) {
+          return TextButton(
+            onPressed: _nextPage,
+            child: const Text(
+              'Carregar Mais',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 25,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            style:
+                TextButton.styleFrom(backgroundColor: Colors.lightBlueAccent),
+          );
+        } else {
+          return Card(
+            elevation: 10.0,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 140.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      flex: 3,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            list[index]['name'],
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.start,
+                          ),
+                          Divider(),
+                          Text(
+                            list[index]['description'] ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Divider(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Flexible(child: Icon(Icons.star)),
+                              Flexible(
+                                flex: 1,
+                                child: Text(
+                                    list[index]['stargazers_count'].toString(),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                              Divider(),
+                              Flexible(child: Icon(Icons.account_tree)),
+                              Flexible(
+                                flex: 1,
+                                child: Text(
+                                  list[index]['forks_count'].toString(),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Spacer(),
-                  Flexible(
-                    flex: 1,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: ClipOval(
-                            child: SizedBox.fromSize(
-                              size: Size.fromRadius(32), // Image radius
-                              child: Image.network(
-                                list[index]['owner']
-                                    ['avatar_url'],
-                                fit: BoxFit.cover,
+                    Spacer(),
+                    Flexible(
+                      flex: 1,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: ClipOval(
+                              child: SizedBox.fromSize(
+                                size: Size.fromRadius(32), // Image radius
+                                child: Image.network(
+                                  list[index]['owner']['avatar_url'],
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Divider(),
-                        Flexible(
-                          flex: 1,
-                          child: Text(
-                            list[index]['owner']['login'],
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
+                          Divider(),
+                          Flexible(
+                            flex: 1,
+                            child: Text(
+                              list[index]['owner']['login'],
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        );
+          );
+        }
       },
     );
   }

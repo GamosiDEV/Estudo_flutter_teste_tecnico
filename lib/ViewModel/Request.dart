@@ -6,7 +6,7 @@ enum SortOrNot { repositories , stars,  notSort }
 class Request {
 
   Future<Map> getRepositories(
-      String query, SortOrNot sortOrNot, {int offSet=1}) async {
+      String query, SortOrNot sortOrNot, int offSet) async {
     http.Response response;
 
     if (query == null || query == '') {
