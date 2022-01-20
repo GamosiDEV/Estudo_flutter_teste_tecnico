@@ -1,4 +1,4 @@
-import 'package:estudo_de_teste_tecnico/Model/Request.dart';
+import 'package:estudo_de_teste_tecnico/ViiewModel/Request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -181,32 +181,34 @@ class _HomePageState extends State<HomePage> {
               height: 110,
               child: Row(
                 children: [
-                  Padding(padding: EdgeInsets.all(10)),
-                  Column(
-                    children: [
-                      Text(snapshot.data['items'][index]['name']),
-                      SizedBox(
-                        width: 200,
-                        child: Text(
-                          snapshot.data['items'][index]['description'] ?? '',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(snapshot.data['items'][index]['stargazers_count']
-                              .toString()),
-                          Text(snapshot.data['items'][index]['forks_count']
-                              .toString())
-                        ],
-                      )
-                    ],
+                  Flexible(
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        Text(snapshot.data['items'][index]['name']),
+                        Text(
+                            snapshot.data['items'][index]['description'] ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(snapshot.data['items'][index]['stargazers_count']
+                                .toString()),
+                            const Padding(padding: EdgeInsets.all(10)),
+                            Text(snapshot.data['items'][index]['forks_count']
+                                .toString())
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                  Container(
-                    width: 100,
-                    color: Colors.black,
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                      color: Colors.black,
+                    ),
                   )
                 ],
               ),
